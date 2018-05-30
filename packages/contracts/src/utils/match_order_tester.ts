@@ -28,7 +28,6 @@ import {
     ContractName,
     ERC20BalancesByOwner,
     ERC721TokenIdsByOwner,
-    ExchangeStatus,
     TransferAmountsByMatchOrders as TransferAmounts,
 } from '../utils/types';
 import { provider, web3Wrapper } from '../utils/web3_wrapper';
