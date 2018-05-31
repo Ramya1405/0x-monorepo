@@ -184,19 +184,19 @@ export interface OrderInfo {
     orderTakerAssetFilledAmount: BigNumber;
 }
 
-export interface ERC20ProxyData {
+export interface ERC20AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
 }
 
-export interface ERC721ProxyData {
+export interface ERC721AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress: string;
     tokenId: BigNumber;
     data: string;
 }
 
-export interface ProxyData {
+export interface AssetData {
     assetProxyId: AssetProxyId;
     tokenAddress?: string;
     data?: any;
