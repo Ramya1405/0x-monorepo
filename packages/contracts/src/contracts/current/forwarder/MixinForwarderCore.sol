@@ -92,7 +92,7 @@ contract MixinForwarderCore is
         internal
         returns (Exchange.FillResults memory totalFillResults)
     {
-        address token = readAddress(orders[0].makerAssetData, 1);
+        address token = readAddress(orders[0].makerAssetData, 0);
         require(token == address(ZRX_TOKEN), TAKER_ASSET_ZRX);
         for (uint256 i = 0; i < orders.length; i++) {
             // Token being bought by taker must be the same for each order

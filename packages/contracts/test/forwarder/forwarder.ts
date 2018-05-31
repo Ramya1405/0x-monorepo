@@ -1,6 +1,6 @@
 import { ZeroEx } from '0x.js';
 import { BlockchainLifecycle } from '@0xproject/dev-utils';
-import { TransactionReceiptWithDecodedLogs } from '@0xproject/types';
+import { SignedOrder, TransactionReceiptWithDecodedLogs } from '@0xproject/types';
 import { BigNumber } from '@0xproject/utils';
 import { Web3Wrapper } from '@0xproject/web3-wrapper';
 import * as chai from 'chai';
@@ -22,7 +22,7 @@ import { ERC721Wrapper } from '../../src/utils/erc721_wrapper';
 import { ExchangeWrapper } from '../../src/utils/exchange_wrapper';
 import { ForwarderWrapper } from '../../src/utils/forwarder_wrapper';
 import { OrderFactory } from '../../src/utils/order_factory';
-import { AssetProxyId, ContractName, ERC20BalancesByOwner, SignedOrder } from '../../src/utils/types';
+import { AssetProxyId, ContractName, ERC20BalancesByOwner } from '../../src/utils/types';
 import { provider, txDefaults, web3Wrapper } from '../../src/utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -66,6 +66,7 @@ describe(ContractName.Forwarder, () => {
     let feeProportion: number = 0;
 
     before(async () => {
+        await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
@@ -101,7 +102,7 @@ describe(ContractName.Forwarder, () => {
             exchangeContractAddress: exchangeInstance.address,
             networkId: constants.TESTRPC_NETWORK_ID,
         });
-        const exchangeWrapper = new ExchangeWrapper(exchange, zeroEx);
+        const exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC20, erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(AssetProxyId.ERC721, erc721Proxy.address, owner);
 
@@ -145,17 +146,14 @@ describe(ContractName.Forwarder, () => {
         );
         forwarderContract = new ForwarderContract(forwarderInstance.abi, forwarderInstance.address, provider);
         await forwarderContract.setERC20ProxyApproval.sendTransactionAsync(AssetProxyId.ERC20, { from: owner });
-        forwarderWrapper = new ForwarderWrapper(forwarderContract, web3Wrapper, zrxToken.address);
+        forwarderWrapper = new ForwarderWrapper(forwarderContract, provider, zrxToken.address);
         erc20Wrapper.addTokenOwnerAddress(forwarderInstance.address);
-
-        const forwarderZRXBalance = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18);
-        const txHash = await zrxToken.transfer.sendTransactionAsync(forwarderInstance.address, forwarderZRXBalance, {
-            from: owner,
-        });
-        await web3Wrapper.awaitTransactionMinedAsync(txHash);
 
         web3Wrapper.abiDecoder.addABI(forwarderContract.abi);
         web3Wrapper.abiDecoder.addABI(exchangeInstance.abi);
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
