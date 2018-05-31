@@ -29,7 +29,7 @@
         "MultiSigWallet",
         "MultiSigWalletWithTimeLock",
         "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress",
-        "TestLibAssetProxyDecoder",
+        "TestAssetDataDecoders",
         "TestAssetProxyDispatcher",
         "TestLibBytes",
         "TestLibMem",
